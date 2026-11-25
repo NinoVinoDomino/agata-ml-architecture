@@ -1,0 +1,7 @@
+**
+!Dockerfile
+!requirements.lock
+!agata/
+!agata/*.py
+!agata/rpc/
+!agata/rpc/*.py

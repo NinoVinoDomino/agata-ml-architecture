@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package agata.model.v1;
+
+service Model {
+  rpc Generate(GenerateRequest) returns (GenerateReply);
+}
+
+message GenerateRequest {
+  string model_id = 1;
+  string date = 2; // ISO 8601 calendar date
+  string sign = 3; // Canonical REST sign identifier
+  string topic = 4; // Canonical REST topic identifier
+  uint32 attempt = 5;
+  string system_prompt = 6;
+  string user_prompt = 7;
+}
+
+message GenerateReply {
+  string text = 1;
+  bool editorial_template = 2;
+}

@@ -1,0 +1,42 @@
+x-agata: &agata
+  build:
+    context: .
+    target: app
+  image: agata:local
+  env_file:
+    - path: .env
+      required: false
+
+services:
+  generate:
+    <<: *agata
+    command: ["python", "-m", "agata", "generate"]
+    volumes:
+      - editions:/app/data
+  api:
+    <<: *agata
+    depends_on:
+      generate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - editions:/app/data:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+  telegram:
+    <<: *agata
+    profiles: ["telegram"]
+    depends_on:
+      generate:
+        condition: service_completed_successfully
+    command: ["python", "-m", "agata", "poll"]
+    init: true
+    volumes:
+      - editions:/app/data:ro
+
+volumes:
+  editions:
